@@ -27,7 +27,7 @@ If you want to use I<sup>2</sup>C to communicate between halves, you will need a
 
 The most commonly used connection is a TRRS cable and jacks.  These provide 4 wires, making them very useful for split keyboards, and are easy to find. 
 
-However, since one of the wires carries VCC, this means that the boards are not hot pluggable. You should always disconnect the board from USB before unplugging and plugging in TRRS cables, or you can short the controller, or worse. 
+However, since one of the wires carries VCC, this means that the boards are not hot pluggable. You should always disconnect the board from USB before unplugging and plugging in TRRS cables, or you can short the controller, or worse. Furthermore, it is good practice to not wire VCC and GND to the sleeve and first ring (closest to the base) of the connector, as doing so will cause a direct short from power to ground if someone accidentally uses the more common, 3-pole 3.5mm cable, instead of the harder to find 4-pole 3.5mm cable.
 
 Another option is to use phone cables (as in, old school RJ-11/RJ-14 cables). Make sure that you use one that actually supports 4 wires/lanes.  
 
@@ -38,8 +38,8 @@ However, USB cables, SATA cables, and even just 4 wires have been known to be us
 ### Serial Wiring
 
 The 3 wires of the TRS/TRRS cable need to connect GND, VCC, and D0 (aka PDO or pin 3) between the two Pro Micros. 
-
-?> Note that the pin used here is actually set by `SOFT_SERIAL_PIN` below.
+Note that you don't need to use D0, you could also use D1, D2, D3 or E6, just make sure to specify which pin is used for serial communication in your config.h file by including the line:
+#define SOFT_SERIAL_PIN D0
 
 ![serial wiring](https://i.imgur.com/C3D1GAQ.png)
 
@@ -67,7 +67,11 @@ SPLIT_TRANSPORT = custom
 
 ### Setting Handedness
 
-By default, the firmware does not know which side is which; it needs some help to determine that. There are several ways to do this, listed in order of precedence.
+The firmware needs to know which side is which. There are several ways to do this, listed in order of precedence.
+
+#### Handedness by USB
+
+If you always plug in the keyboard using the left board connector, QMK can use that fact to figure out which board is the left hand by simply observing whether it is running on a Pro Micro that is plugged in to USB. This is QMK's default behavior, so to use this option, simply comment out `EE_HANDS`, `I2C_MASTER_RIGHT` and `MASTER_RIGHT` if for some reason they were already set.
 
 #### Handedness by Pin
 
