@@ -18,5 +18,6 @@
 
 // place overrides here
 // #define PERMISSIVE_HOLD
-#define JMD_HOLD_ON_OTHER_KEY_PRESS
+// #define JMD_HOLD_ON_OTHER_KEY_PRESS
+#define TAPPING_TERM 150
 // #define IGNORE_MOD_TAP_INTERRUPT

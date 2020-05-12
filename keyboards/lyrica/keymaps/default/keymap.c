@@ -23,20 +23,20 @@
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [APL] = LAYOUT(
-       KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,               KC_Y,          KC_U,      KC_I,    KC_O,     KC_P, KC_BSLS,
+       KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,               KC_Y,          KC_U,      KC_I,    KC_O,     KC_P, KC_BSPC,
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,               KC_H,          KC_J,      KC_K,    KC_L,  KC_SCLN, KC_QUOT,
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,               KC_N,          KC_M,   KC_COMM,  KC_DOT,  KC_SLSH, KC_RSFT,
                                  KC_LCTL, KC_LALT, KC_LCMD,    LT(NAV, KC_SPC), LT(NUM, KC_0), MO(ADJUST)
     ),
     [WIN] = LAYOUT(
-       KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,               KC_Y,          KC_U,      KC_I,    KC_O,     KC_P, KC_BSLS,
+       KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,               KC_Y,          KC_U,      KC_I,    KC_O,     KC_P, KC_BSPC,
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,               KC_H,          KC_J,      KC_K,    KC_L,  KC_SCLN, KC_QUOT,
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,               KC_N,          KC_M,   KC_COMM,  KC_DOT,  KC_SLSH, KC_RSFT,
                                  KC_LWIN, KC_LALT, KC_LCTL,    LT(NAV, KC_SPC), LT(NUM, KC_0), MO(ADJUST)
     ),
     [NAV] = LAYOUT(
       _______, _______, _______, _______, _______, _______,    KC_CAPS, _______,   KC_UP, KC_PGUP, _______,  KC_DEL,
-      _______, _______, _______, _______, _______, _______,    _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC,  KC_ENT,
+      _______, _______, _______, _______, _______, _______,    _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSLS,  KC_ENT,
       _______, _______, _______, _______, _______, _______,    _______, KC_PGDN, KC_HOME,  KC_END, _______, _______,
                                  _______, _______, _______,    _______, _______, _______
     ),
@@ -62,7 +62,7 @@ void persistent_default_layer_set(uint16_t default_layer) {
 static uint8_t mode_switcher_state = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Mode switcher, RESET, WINDOWS and APPLE
-  if (keycode == KC_TAB || keycode == KC_BSLS) {
+  if (keycode == KC_TAB || keycode == KC_BSPC) {
     if (record->event.pressed) {
       mode_switcher_state |= 0B10000000;
     } else {
