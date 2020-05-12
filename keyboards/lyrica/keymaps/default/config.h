@@ -16,13 +16,8 @@
 
 #pragma once
 
-#define USE_SERIAL
-
-// #define SPLIT_USB_DETECT
-// #define SPLIT_HAND_PIN F4
-#define EE_HANDS
-// #define MASTER_LEFT
-// #define MASTER_RIGHT
-
-
 // place overrides here
+#define PERMISSIVE_HOLD
+#define IGNORE_MOD_TAP_INTERRUPT
+#define TAPPING_TERM 10
+#define RETRO_TAPPING
