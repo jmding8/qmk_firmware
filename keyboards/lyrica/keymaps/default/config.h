@@ -17,7 +17,6 @@
 #pragma once
 
 // place overrides here
-#define PERMISSIVE_HOLD
-#define IGNORE_MOD_TAP_INTERRUPT
-#define TAPPING_TERM 10
-#define RETRO_TAPPING
+// #define PERMISSIVE_HOLD
+#define JMD_HOLD_ON_OTHER_KEY_PRESS
+// #define IGNORE_MOD_TAP_INTERRUPT

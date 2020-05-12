@@ -21,8 +21,6 @@
 #define NUM 3
 #define ADJUST 4
 
-
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [APL] = LAYOUT(
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,               KC_Y,          KC_U,      KC_I,    KC_O,     KC_P, KC_BSLS,
