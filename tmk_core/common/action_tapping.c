@@ -163,6 +163,16 @@ bool process_tapping(keyrecord_t *keyp) {
                     // set interrupted flag when other key preesed during tapping
                     if (event.pressed) {
                         tapping_key.tap.interrupted = true;
+#    if defined(JMD_HOLD_ON_OTHER_KEY_PRESS)
+                        {
+                            debug("Tapping: End. No tap. Interfered by pressed key\n");
+                            process_record(&tapping_key);
+                            tapping_key = (keyrecord_t){};
+                            debug_tapping_key();
+                            // enqueue
+                            return false;
+                        }
+#    endif
                     }
                     // enqueue
                     return false;

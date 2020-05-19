@@ -17,7 +17,23 @@
 #pragma once
 
 // place overrides here
-// #define PERMISSIVE_HOLD
+
+// 2
+// #define TAPPING_TERM 250
+// getting navigation instead of space sometimes
+
+// 3
 // #define JMD_HOLD_ON_OTHER_KEY_PRESS
-#define TAPPING_TERM 150
+// #define TAPPING_TERM 400
+// when typing natural text, often I input space + right-hand-character in a rolling
+// combo fashion, which gets interpreted as mod here
+
+// 4
+#define PERMISSIVE_HOLD
+// #define TAPPING_TERM 400
+
+
+
+
+
 // #define IGNORE_MOD_TAP_INTERRUPT
