@@ -35,15 +35,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                  KC_LWIN, KC_LALT, KC_LCTL,    LT(NAV, KC_SPC), LT(NUM, KC_ENT), MO(ADJUST)
     ),
     [NAV] = LAYOUT(
-      KC_PSCR, _______, _______, _______, _______, _______,    KC_CAPS, _______,   KC_UP, KC_PGUP, _______,  KC_DEL,
-      _______, _______, _______, _______, _______, _______,    _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSLS,  KC_GRV,
-      _______, _______, _______, _______, _______, _______,    _______, KC_PGDN, KC_HOME,  KC_END, _______, _______,
+      _______, KC_EXLM,   KC_AT, KC_LCBR, KC_RCBR, KC_PIPE,    _______, _______,   KC_UP, KC_PGUP, _______,  KC_DEL,
+      _______, KC_HASH,  KC_DLR, KC_LPRN, KC_RPRN, KC_TILD,    KC_AMPR, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
+      _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC,  KC_GRV,    KC_ASTR, KC_PGDN, KC_HOME,  KC_END, _______, _______,
                                  _______, _______, _______,    _______, _______, _______
     ),
     [NUM] = LAYOUT(
-      _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4, _______,    _______,    KC_7,    KC_8,    KC_9, KC_MINS, KC_LBRC,
-      _______,   KC_F5,   KC_F6,   KC_F7,   KC_F8, _______,    _______,    KC_4,    KC_5,    KC_6,  KC_EQL, KC_RBRC,
-      _______,   KC_F9,  KC_F10,  KC_F11,  KC_F12, _______,    _______,    KC_1,    KC_2,    KC_3,  KC_DOT,  KC_GRV,
+      _______,   KC_F9,  KC_F10,  KC_F11,  KC_F12, _______,    _______,    KC_7,    KC_8,    KC_9, _______, _______,
+      _______,   KC_F5,   KC_F6,   KC_F7,   KC_F8, _______,    KC_UNDS,    KC_4,    KC_5,    KC_6, KC_PLUS, KC_PSCR,
+      _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4, _______,    KC_MINS,    KC_1,    KC_2,    KC_3,  KC_EQL, KC_CAPS,
                                  _______, _______, _______,    _______, _______,    KC_0
     ),
     [ADJUST] = LAYOUT(
