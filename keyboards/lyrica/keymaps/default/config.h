@@ -30,8 +30,15 @@
 
 // 4
 #define PERMISSIVE_HOLD
-// #define TAPPING_TERM 400
 
+// 5 
+// when typing " ←" rapidly (tap(space), hold(space) + j), the second press
+// of the space/navnum triggers a space rather than pending a hold. Setting
+// tapping_term to a small number to hopefully fix this.
+// #define TAPPING_TERM 150 original problem persists
+// #define TAPPING_TERM 120 original problem persists
+// #define TAPPING_TERM 100 space becomes inconsistent as it requires really short presses
+#define TAPPING_TERM 150
 
 
 
