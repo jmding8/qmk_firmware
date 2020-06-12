@@ -23,38 +23,39 @@
 
 enum custom_keycodes {
   KC_R000 = SAFE_RANGE,
+  KC_R100,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [APL] = LAYOUT(
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSPC,
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
-      KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
+      KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_R100,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
                                  KC_LCTL, KC_LALT, KC_LGUI,    KC_R000, LT(FKEYS, KC_ENT), MO(ADJUST)
     ),
     [WIN] = LAYOUT(
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSPC,
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
-      KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
+      KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_R100,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
                                  KC_LWIN, KC_LALT, KC_LCTL,    KC_R000, LT(FKEYS, KC_ENT), MO(ADJUST)
     ),
     [NAVNUM] = LAYOUT(
       _______,    KC_1,    KC_2,    KC_3,    KC_4, KC_LCBR,    KC_RCBR, _______,   KC_UP, KC_PGUP, _______,  KC_DEL,
       _______,    KC_5,    KC_6,    KC_7,    KC_8, KC_LBRC,    KC_RBRC, KC_LEFT, KC_DOWN, KC_RGHT, _______, KC_BSLS,
-      KC_LSFT,    KC_9,    KC_0, KC_MINS,  KC_EQL,  KC_GRV,    _______, KC_PGDN, KC_HOME,  KC_END, _______, KC_RSFT,
-                                 _______, _______, _______,    _______, _______, _______
+      KC_LSFT,    KC_9,    KC_0, KC_MINS,  KC_EQL,  KC_GRV,    KC_R100, KC_PGDN, KC_HOME,  KC_END, _______, KC_RSFT,
+                                 _______, _______, _______,    KC_R000, _______, _______
     ),
     [FKEYS] = LAYOUT(
       KC_PSCR,   KC_F1,   KC_F2,   KC_F3,   KC_F4, _______,    _______, _______, _______, _______, KC_CLCK, _______,
       _______,   KC_F5,   KC_F6,   KC_F7,   KC_F8, _______,    _______, _______, _______, _______, KC_CLCK, _______,
-      _______,   KC_F1,  KC_F10,  KC_F11,  KC_F12, _______,    _______, _______, _______, _______, KC_CLCK, _______,
-                                 _______, _______, _______,    _______, _______, _______
+      _______,   KC_F1,  KC_F10,  KC_F11,  KC_F12, _______,    KC_R100, _______, _______, _______, KC_CLCK, _______,
+                                 _______, _______, _______,    KC_R000, _______, _______
     ),
     [ADJUST] = LAYOUT(
       _______, _______, _______, _______, _______, _______,    _______, _______, KC_VOLU, _______, _______, _______,
       _______, _______, _______, _______, _______, _______,    _______, KC_BRID, KC_VOLD, KC_BRIU, _______, _______,
-      _______, _______, _______, _______, _______, _______,    _______, _______, _______, _______, _______, _______,
-                                 _______, _______, _______,    _______, _______, _______
+      _______, _______, _______, _______, _______, _______,    KC_R100, _______, _______, _______, _______, _______,
+                                 _______, _______, _______,    KC_R000, _______, _______
     )
 };
 
@@ -64,8 +65,9 @@ void persistent_default_layer_set(uint16_t default_layer) {
 }
 
 static uint8_t mode_switcher_state = 0;
-static uint8_t pressed_keys_counter = 0;
-static int8_t kc_r000_counter = -1;
+bool kc_r000_pressed = 0;
+bool kc_r100_pressed = 0;
+bool navnum_triggered = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Mode switcher, RESET, WINDOWS and APPLE
   if (keycode == KC_TAB || keycode == KC_BSPC) {
@@ -104,36 +106,43 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
   }
 
-  // Count pressed keys for key tap/hold overloading.
+  // Handle kc_r000, kc_r100 overload.
   if (record->event.pressed) {
-    pressed_keys_counter++;
+    navnum_triggered = 0;
+    switch (keycode) {
+      case KC_R000:
+        if (kc_r100_pressed) {
+          layer_on(NAVNUM);
+          navnum_triggered = 1;
+        }
+        kc_r000_pressed = 1;
+        break;
+      case KC_R100:
+        if (kc_r000_pressed) {
+          layer_on(NAVNUM);
+          navnum_triggered = 1;
+        }
+        kc_r100_pressed = 1;
+        break;
+    }
   } else {
-    pressed_keys_counter--;
-  }
-
-  // Handle right, row 0, col 00 (right thumb 0) overloading.
-  if (keycode == KC_R000) {
-    if (record->event.pressed) {
-      if (pressed_keys_counter == 1) {
-        kc_r000_counter = 0;
-      }
-      layer_on(NAVNUM);
+    layer_off(NAVNUM);
+    if (navnum_triggered) {
+      // do not send anything
     } else {
-      if (kc_r000_counter < 1) {
-        SEND_STRING(" ");
-      } else { 
+      switch (keycode) {
+        case KC_R000:
+          SEND_STRING(" ");
+          kc_r000_pressed = 0;
+          break;
+        case KC_R100:
+          SEND_STRING("n");
+          kc_r100_pressed = 0;
+          break;
       }
-      layer_off(NAVNUM);
-      kc_r000_counter = -1;
-    }
-  } else {
-    if (record->event.pressed) {
-      // do nothing
-    } else if (kc_r000_counter >= 0) {
-      kc_r000_counter++;
     }
   }
-
+  
   return true;
 }
 
