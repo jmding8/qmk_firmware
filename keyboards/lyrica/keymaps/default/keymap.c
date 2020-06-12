@@ -21,23 +21,22 @@
 #define FKEYS 3
 #define ADJUST 4
 
-// enum custom_keycodes {
-//   LS_CLCK = SAFE_RANGE,
-//   RS_CLCK,
-// };
+enum custom_keycodes {
+  KC_R000 = SAFE_RANGE,
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [APL] = LAYOUT(
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSPC,
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
-                                 KC_LCTL, KC_LALT, KC_LGUI,    LT(NAVNUM, KC_SPC), LT(FKEYS, KC_ENT), MO(ADJUST)
+                                 KC_LCTL, KC_LALT, KC_LGUI,    KC_R000, LT(FKEYS, KC_ENT), MO(ADJUST)
     ),
     [WIN] = LAYOUT(
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSPC,
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
-                                 KC_LWIN, KC_LALT, KC_LCTL,    LT(NAVNUM, KC_SPC), LT(FKEYS, KC_ENT), MO(ADJUST)
+                                 KC_LWIN, KC_LALT, KC_LCTL,    KC_R000, LT(FKEYS, KC_ENT), MO(ADJUST)
     ),
     [NAVNUM] = LAYOUT(
       _______,    KC_1,    KC_2,    KC_3,    KC_4, KC_LCBR,    KC_RCBR, _______,   KC_UP, KC_PGUP, _______,  KC_DEL,
@@ -65,7 +64,8 @@ void persistent_default_layer_set(uint16_t default_layer) {
 }
 
 static uint8_t mode_switcher_state = 0;
-// static uint8_t capslock_state = 0;
+static uint8_t pressed_keys_counter = 0;
+static int8_t kc_r000_counter = -1;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Mode switcher, RESET, WINDOWS and APPLE
   if (keycode == KC_TAB || keycode == KC_BSPC) {
@@ -104,67 +104,35 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
   }
 
-  // Double shift capslock
-  // if (record->event.pressed) {
-    // switch (keycode) {
-    //   case LS_CLCK:
-    //     capslock_state |= 0B10000000;
-    //     if (capslock_state == 0B11000000) {
-    //       SEND_STRING(SS_DOWN(X_CAPSLOCK));
-    //     } else {
-    //       SEND_STRING(SS_DOWN(X_LSFT));
-    //     }
-    //     break;
-    //   case RS_CLCK:
-    //     capslock_state |= 0B01000000;
-    //     if (capslock_state == 0B11000000) {
-    //       SEND_STRING(SS_DOWN(X_CAPSLOCK));
-    //     } else {
-    //       SEND_STRING(SS_DOWN(X_RSFT));
-    //     }
-    //     break;
-    //   }
-    // }
+  // Count pressed keys for key tap/hold overloading.
+  if (record->event.pressed) {
+    pressed_keys_counter++;
+  } else {
+    pressed_keys_counter--;
+  }
 
-    // switch (keycode) {
-    //   case KC_LSFT:
-    //     capslock_state |= 0B10000000;
-    //     break;
-    //   case KC_RSFT:
-    //     capslock_state |= 0B01000000;
-    //     break;
-    // }
-    // if (capslock_state == 0B11000000) {
-    //   SEND_STRING(SS_TAP(X_CAPSLOCK));
-    // }
-
-  // } else {
-  //   switch (keycode) {
-      // case LS_CLCK:
-      //   if (capslock_state == 0B11000000) {
-      //     SEND_STRING(SS_UP(X_CAPSLOCK)SS_UP(X_RSFT));
-      //   } else {
-      //     SEND_STRING(SS_UP(X_LSFT));
-      //   }
-      //   capslock_state &= ~(0B10000000);
-      //   break;
-      // case RS_CLCK:
-      //   if (capslock_state == 0B11000000) {
-      //     SEND_STRING(SS_UP(X_CAPSLOCK)SS_UP(X_LSFT));
-      //   } else {
-      //     SEND_STRING(SS_UP(X_RSFT));
-      //   }
-      //   capslock_state &= ~(0B01000000);
-      //   break;
-
-      // case KC_LSFT:
-      //   capslock_state &= ~(0B10000000);
-      //   break;
-      // case KC_RSFT:
-      //   capslock_state &= ~(0B01000000);
-      //   break;
-  //   }
-  // }
+  // Handle right, row 0, col 00 (right thumb 0) overloading.
+  if (keycode == KC_R000) {
+    if (record->event.pressed) {
+      if (pressed_keys_counter == 1) {
+        kc_r000_counter = 0;
+      }
+      layer_on(NAVNUM);
+    } else {
+      if (kc_r000_counter < 1) {
+        SEND_STRING(" ");
+      } else { 
+      }
+      layer_off(NAVNUM);
+      kc_r000_counter = -1;
+    }
+  } else {
+    if (record->event.pressed) {
+      // do nothing
+    } else if (kc_r000_counter >= 0) {
+      kc_r000_counter++;
+    }
+  }
 
   return true;
 }
