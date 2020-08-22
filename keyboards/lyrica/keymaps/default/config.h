@@ -34,7 +34,7 @@
 #define PERMISSIVE_HOLD // SFT_T(a) down, j down, j up, SFT_T(a) up in < tapping_term will now be J instead of aj
 // #define IGNORE_MOD_TAP_INTERRUPT // rolled mod-taps will now be sequential taps
 #define QMK_KEYS_PER_SCAN 4
-#define TAPPING_TERM 125
+#define TAPPING_TERM 200
 
-#define COMBO_COUNT 3
+#define COMBO_COUNT 4
 #define COMBO_TERM 75

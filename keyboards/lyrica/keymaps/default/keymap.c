@@ -3,22 +3,97 @@
 // Configuration options
 #include QMK_KEYBOARD_H
 
+// Layer declarations
 enum layers {APL, WIN, NAVNUM, FNS, ADJ};
 
+
+// -------------------------------------------------------------------------------------------------------
+// Tap dance
+// -------------------------------------------------------------------------------------------------------
+// Tap Dance declarations
+enum {TD_LAYERS};
+
+enum {
+  SINGLE_TAP = 1,
+  SINGLE_HOLD = 2,
+  DOUBLE_TAP = 3,
+  DOUBLE_HOLD = 4,
+  TRIPLE_TAP = 5,
+  TRIPLE_HOLD = 6
+};
+
+int cur_dance (qk_tap_dance_state_t *state) {
+  if (state->count == 1) {
+    if (state->pressed) return SINGLE_HOLD;
+    else return SINGLE_TAP;
+  }
+  else if (state->count == 2) {
+    if (state->pressed) return DOUBLE_HOLD;
+    else return DOUBLE_TAP;
+  }
+  else if (state->count == 3) {
+    if (state->interrupted || !state->pressed)  return TRIPLE_TAP;
+    else return TRIPLE_HOLD;
+  }
+  else return 8;
+}
+
+typedef struct {
+  bool is_press_action;
+  int state;
+} tap;
+
+static tap alttap_state = {
+  .is_press_action = true,
+  .state = 0
+};
+
+void alt_finished (qk_tap_dance_state_t *state, void *user_data) {
+  alttap_state.state = cur_dance(state);
+  switch (alttap_state.state) {
+    case SINGLE_TAP: layer_on(NAVNUM); break;
+    case SINGLE_HOLD: layer_on(NAVNUM); break;
+    case DOUBLE_TAP: layer_on(FNS); break;
+    case DOUBLE_HOLD: layer_on(FNS); break;
+  }
+}
+
+void alt_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (alttap_state.state) {
+    case SINGLE_TAP: layer_off(NAVNUM); break;
+    case SINGLE_HOLD: layer_off(NAVNUM); break;
+    case DOUBLE_TAP: layer_off(FNS); break;
+    case DOUBLE_HOLD: layer_off(FNS); break;
+  }
+  alttap_state.state = 0;
+}
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [TD_LAYERS] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, alt_finished, alt_reset)
+};
+
+
+// -------------------------------------------------------------------------------------------------------
+// Keymaps dance
+// -------------------------------------------------------------------------------------------------------
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [APL] = LAYOUT(
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSLS,
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
-                                 KC_LCTL, KC_LOPT, KC_LGUI,       KC_SPC, KC_EXEC, MO(ADJ)
+                                 KC_LCTL, KC_LOPT, KC_LGUI,       KC_SPC, TD(TD_LAYERS), MO(ADJ)
+
+                                                                // Using a KC_SPC + ___ combos to trigger layers doesnt work
+                                                                // All of the options for the second key result in unwanted
+                                                                // behaviors:
                                                                 // KC_ NO: spaces only trigger ~50% time
-                                                                // KC_ G: works perfectly, but taps -> g
+                                                                // KC_ G: works perfectly, but solo presses -> g
                                                                 // KC_ STOP, INT7, EXSEL, EXEC: NAVNUM doesnt toggle
                                                                 //   It appears that keycodes lacking Windows support
                                                                 //   (https://beta.docs.qmk.fm/using-qmk/simple-keycodes/keycodes)
                                                                 //   all have behave the same way
-                                                                // KC_ F24: works perfectly, but taps => ~ on WIN
-                                                                // CUSTOM_KEYCODE: taps -> e
+                                                                // KC_ F24: works perfectly, but solo presses -> ~ on WIN
+                                                                // CUSTOM_KEYCODE: solo presses -> e
     ),
     [WIN] = LAYOUT(
       _______, _______, _______, _______, _______, _______,    _______, _______, _______, _______, _______, _______,
@@ -46,20 +121,26 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     )
 };
 
+// -------------------------------------------------------------------------------------------------------
+// Combos
+// -------------------------------------------------------------------------------------------------------
 enum combos {
   TILDE_COMBO,
   ENTER_COMBO,
-  FNS_COMBO
+  RESET1_COMBO,
+  RESET2_COMBO
 };
 
 const uint16_t PROGMEM tilde_combo[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM enter_combo[] = {KC_J, KC_K, COMBO_END};
-const uint16_t PROGMEM fns_combo[] = {KC_SPC, KC_EXEC, COMBO_END};
+const uint16_t PROGMEM reset1_combo[] = {KC_E, KC_R, KC_T, COMBO_END};
+const uint16_t PROGMEM reset2_combo[] = {KC_Y, KC_U, KC_I, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
   [TILDE_COMBO] = COMBO_ACTION(tilde_combo),
   [ENTER_COMBO] = COMBO_ACTION(enter_combo),
-  [FNS_COMBO] = COMBO_ACTION(fns_combo)
+  [RESET1_COMBO] = COMBO_ACTION(reset1_combo),
+  [RESET2_COMBO] = COMBO_ACTION(reset2_combo)
 };
  
 void process_combo_event(uint8_t combo_index, bool pressed) {
@@ -78,84 +159,18 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
         unregister_code(KC_ENT);
       }
       break;
-    case FNS_COMBO:
-      if (pressed) {
-        // tap_code(KC_X); // for debugging
-        layer_on(FNS);
-      } else {
-        layer_off(FNS);
-      }
+    case RESET1_COMBO:
+    case RESET2_COMBO:
+      reset_keyboard();
       break;
   }
 }
 
+// -------------------------------------------------------------------------------------------------------
+// Legacy persistent layer set
+// -------------------------------------------------------------------------------------------------------
 void persistent_default_layer_set(uint16_t default_layer) {
   eeconfig_update_default_layer(default_layer);
   default_layer_set(default_layer);
 }
 
-static uint8_t reset_hook = 0;
-void maybe_reset(void) {
-  if (reset_hook == 0B11110000) {
-    reset_keyboard();
-  }
-}
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    // Handle hooks for RESET combo.
-    case KC_W:
-    case KC_Y:
-      if (record->event.pressed) {
-        reset_hook |= 0B10000000;
-        maybe_reset();
-      } else {
-        reset_hook &= ~(0B10000000);
-      }
-      break;
-    case KC_E:
-    case KC_U:
-      if (record->event.pressed) {
-        reset_hook |= 0B01000000;
-        maybe_reset();
-      } else {
-        reset_hook &= ~(0B01000000);
-      }
-      break;
-    case KC_R:
-    case KC_I:
-      if (record->event.pressed) {
-        reset_hook |= 0B00100000;
-        maybe_reset();
-      } else {
-        reset_hook &= ~(0B00100000);
-      }
-      break;
-    case KC_T:
-    case KC_O:
-      if (record->event.pressed) {
-        reset_hook |= 0B00010000;
-        maybe_reset();
-      } else {
-        reset_hook &= ~(0B00010000);
-      }
-      break;
-    
-    // Handle hook for NAVNUM / FNS layer.
-    case KC_EXEC:
-      if (record->event.pressed) {
-        if (IS_LAYER_OFF(FNS)) {
-          layer_on(NAVNUM);
-        }
-      } else {
-        layer_off(NAVNUM);
-      }
-    case KC_SPC:
-      if (!record->event.pressed) {
-        layer_off(FNS);
-      }
-      break;
-  }
-  
-  return true;
-}
