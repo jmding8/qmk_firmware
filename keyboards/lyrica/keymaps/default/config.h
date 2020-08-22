@@ -36,5 +36,5 @@
 #define QMK_KEYS_PER_SCAN 4
 #define TAPPING_TERM 125
 
-#define COMBO_COUNT 2
+#define COMBO_COUNT 3
 #define COMBO_TERM 75
