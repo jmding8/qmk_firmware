@@ -3,85 +3,19 @@
 // Configuration options
 #include QMK_KEYBOARD_H
 
-// Layer declarations
+// Declarations
 enum layers {APL, WIN, NAVNUM, FNS, ADJ};
-
-
-// -------------------------------------------------------------------------------------------------------
-// Tap dance
-// -------------------------------------------------------------------------------------------------------
-// Tap Dance declarations
-enum {TD_LAYERS};
-
-enum {
-  SINGLE_TAP = 1,
-  SINGLE_HOLD = 2,
-  DOUBLE_TAP = 3,
-  DOUBLE_HOLD = 4,
-  TRIPLE_TAP = 5,
-  TRIPLE_HOLD = 6
-};
-
-int cur_dance (qk_tap_dance_state_t *state) {
-  if (state->count == 1) {
-    if (state->pressed) return SINGLE_HOLD;
-    else return SINGLE_TAP;
-  }
-  else if (state->count == 2) {
-    if (state->pressed) return DOUBLE_HOLD;
-    else return DOUBLE_TAP;
-  }
-  else if (state->count == 3) {
-    if (state->interrupted || !state->pressed)  return TRIPLE_TAP;
-    else return TRIPLE_HOLD;
-  }
-  else return 8;
-}
-
-typedef struct {
-  bool is_press_action;
-  int state;
-} tap;
-
-static tap alttap_state = {
-  .is_press_action = true,
-  .state = 0
-};
-
-void alt_finished (qk_tap_dance_state_t *state, void *user_data) {
-  alttap_state.state = cur_dance(state);
-  switch (alttap_state.state) {
-    case SINGLE_TAP: layer_on(NAVNUM); break;
-    case SINGLE_HOLD: layer_on(NAVNUM); break;
-    case DOUBLE_TAP: layer_on(FNS); break;
-    case DOUBLE_HOLD: layer_on(FNS); break;
-  }
-}
-
-void alt_reset (qk_tap_dance_state_t *state, void *user_data) {
-  switch (alttap_state.state) {
-    case SINGLE_TAP: layer_off(NAVNUM); break;
-    case SINGLE_HOLD: layer_off(NAVNUM); break;
-    case DOUBLE_TAP: layer_off(FNS); break;
-    case DOUBLE_HOLD: layer_off(FNS); break;
-  }
-  alttap_state.state = 0;
-}
-
-qk_tap_dance_action_t tap_dance_actions[] = {
-  [TD_LAYERS] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, alt_finished, alt_reset)
-};
-
+enum my_keycodes {TD_LAYERS = SAFE_RANGE};
 
 // -------------------------------------------------------------------------------------------------------
-// Keymaps dance
+// Keymaps
 // -------------------------------------------------------------------------------------------------------
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [APL] = LAYOUT(
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,       KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, KC_BSLS,
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,       KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,       KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
-                                 KC_LCTL, KC_LOPT, KC_LGUI,       KC_SPC, TD(TD_LAYERS), MO(ADJ)
+                                 KC_LCTL, KC_LOPT, KC_LGUI,       KC_SPC, TD_LAYERS, MO(ADJ)
 
                                                                 // Using a KC_SPC + ___ combos to trigger layers doesnt work
                                                                 // All of the options for the second key result in unwanted
@@ -174,3 +108,30 @@ void persistent_default_layer_set(uint16_t default_layer) {
   default_layer_set(default_layer);
 }
 
+// -------------------------------------------------------------------------------------------------------
+// Process Record
+// -------------------------------------------------------------------------------------------------------
+static uint16_t timer = 0;
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+  // Custom tap dance implementation. Tap-hold for layer 1, Tap-tap-hold for layer 2.
+  // QMK's out of the box implementation requires you to wait for the full tapping 
+  // term before pushing the desired tap-dance output. This implementation immediately
+  // sets layer 1 on the first tap without waiting for the full tapping term to expire.
+    case TD_LAYERS:
+      if (record->event.pressed) {
+        if (timer_elapsed(timer) < 200) {
+          layer_on(FNS);
+        } else {
+          layer_on(NAVNUM);
+        }
+      } else {
+        layer_off(NAVNUM);
+        layer_off(FNS);
+        timer = timer_read();
+      }
+      break;
+  }
+  
+  return true;
+}
