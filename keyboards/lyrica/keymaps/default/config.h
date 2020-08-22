@@ -16,31 +16,25 @@
 
 #pragma once
 
-// place overrides here
+// Mouse key speed and acceleration.
+#undef MOUSEKEY_DELAY
+#define MOUSEKEY_DELAY          0
+#undef MOUSEKEY_INTERVAL
+#define MOUSEKEY_INTERVAL       16
+#undef MOUSEKEY_WHEEL_DELAY
+#define MOUSEKEY_WHEEL_DELAY    0
+#undef MOUSEKEY_MAX_SPEED
+#define MOUSEKEY_MAX_SPEED      6
+#undef MOUSEKEY_TIME_TO_MAX
+#define MOUSEKEY_TIME_TO_MAX    64
 
-// 2
-// #define TAPPING_TERM 250
-// getting navigation instead of space sometimes
+// Mod/layer tap configuation
+#define RETRO_TAPPING // long presses of MT/LT keys not paired with a second keypress will now result in a tap output
+#define TAPPING_FORCE_HOLD // a tap followed by a hold of a MT/LT key used to be two taps, now it is a tap and a hold
+#define PERMISSIVE_HOLD // SFT_T(a) down, j down, j up, SFT_T(a) up in < tapping_term will now be J instead of aj
+// #define IGNORE_MOD_TAP_INTERRUPT // rolled mod-taps will now be sequential taps
+#define QMK_KEYS_PER_SCAN 4
+#define TAPPING_TERM 125
 
-// 3
-// #define JMD_HOLD_ON_OTHER_KEY_PRESS
-// #define TAPPING_TERM 400
-// when typing natural text, often I input space + right-hand-character in a rolling
-// combo fashion, which gets interpreted as mod here
-
-// 4
-#define PERMISSIVE_HOLD
-
-// 5 
-// when typing " ←" rapidly (tap(space), hold(space) + j), the second press
-// of the space/navnum triggers a space rather than pending a hold. Setting
-// tapping_term to a small number to hopefully fix this.
-// #define TAPPING_TERM 150 original problem persists
-// #define TAPPING_TERM 120 original problem persists
-// #define TAPPING_TERM 100 space becomes inconsistent as it requires really short presses
-#define TAPPING_TERM 150
-
-
-
-
-// #define IGNORE_MOD_TAP_INTERRUPT
+#define COMBO_COUNT 2
+#define COMBO_TERM 75
