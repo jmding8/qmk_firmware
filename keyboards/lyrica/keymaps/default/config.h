@@ -29,8 +29,8 @@
 // #define MK_C_INTERVAL_0  28
 // #define MK_C_OFFSET_1    8
 // #define MK_C_INTERVAL_1  16
-// #define MK_C_OFFSET_2    20
-// #define MK_C_INTERVAL_2  16
+// #define MK_C_OFFSET_2    5
+// #define MK_C_INTERVAL_2  8
 
 // #define MOUSEKEY_WHEEL_MAX_SPEED 4
 // #define MOUSEKEY_WHEEL_TIME_TO_MAX 40
@@ -46,11 +46,11 @@
 #undef MOUSEKEY_DELAY
 #define MOUSEKEY_DELAY          0
 #undef MOUSEKEY_INTERVAL
-#define MOUSEKEY_INTERVAL       16
+#define MOUSEKEY_INTERVAL       24 //40 //48 //64 //32
 #undef MOUSEKEY_WHEEL_DELAY
 #define MOUSEKEY_WHEEL_DELAY    0
 #undef MOUSEKEY_MAX_SPEED
-#define MOUSEKEY_MAX_SPEED      6
+#define MOUSEKEY_MAX_SPEED      30
 #undef MOUSEKEY_TIME_TO_MAX
 #define MOUSEKEY_TIME_TO_MAX    64
 
