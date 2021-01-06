@@ -57,16 +57,15 @@
 // --------------------------------------------------------------
 // Mod/layer tap configuation
 // --------------------------------------------------------------
-#define RETRO_TAPPING // long presses of MT/LT keys not paired with a second keypress will now result in a tap output
+//#define RETRO_TAPPING // long presses of MT/LT keys, without a second keypress, will now result in a tap output
 #define TAPPING_FORCE_HOLD // a tap followed by a hold of a MT/LT key used to be two taps, now it is a tap and a hold
 #define PERMISSIVE_HOLD // SFT_T(a) down, j down, j up, SFT_T(a) up in < tapping_term will now be J instead of aj
 // #define IGNORE_MOD_TAP_INTERRUPT // rolled mod-taps will now be sequential taps
-#define QMK_KEYS_PER_SCAN 4
+#define QMK_KEYS_PER_SCAN 4 // allows multiple key events to be sent per single scan
 #define TAPPING_TERM 200
 
 // --------------------------------------------------------------
 // Combo configuration
 // --------------------------------------------------------------
-#define COMBO_COUNT 3
-// #define COMBO_TERM 75
+#define COMBO_COUNT 2
 #define COMBO_TERM 100
