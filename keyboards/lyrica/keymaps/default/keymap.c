@@ -33,18 +33,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, _______, _______,    _______, _______, _______, _______, _______, _______,
       _______, _______, _______, _______, _______, _______,    _______, _______, _______, _______, _______, _______,
       _______, _______, _______, _______, _______, _______,    _______, _______, _______, _______, _______, _______,
-                                 KC_LWIN, KC_LALT, KC_LCTL,    _______, _______, _______
+                                 KC_LWIN, KC_LCTL, KC_LALT,    _______, _______, _______
     ),
     [NAVNUM] = LAYOUT(
       _______,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    _______, _______,   KC_UP, KC_PGUP, KC_LBRC, KC_RBRC,
-      _______,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC,  KC_DEL,
-      KC_TRNS, _______, _______, KC_MINS,  KC_EQL, _______,    _______, KC_PGDN, KC_HOME,  KC_END, _______, KC_TRNS,
+      _______,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC,  KC_ENT,
+      KC_TRNS, _______, _______, KC_MINS,  KC_EQL, _______,    _______, KC_PGDN, KC_HOME,  KC_END,  KC_DEL, KC_TRNS,
                                  _______, _______, _______,    _______, _______, _______
     ),
     [FNS] = LAYOUT(
-      _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,    _______, _______, KC_MS_U, _______, KC_BTN3, KC_PSCR,
-      _______,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,    _______, KC_MS_L, KC_MS_D, KC_MS_R, KC_BTN1, _______,
-      KC_TRNS, _______, _______,  KC_F11,  KC_F12, _______,    _______, _______, _______, _______, KC_BTN2, KC_CAPS,
+      _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,    KC_CAPS, _______, KC_MS_U, _______, KC_BTN3, _______,
+      _______,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,    KC_PSCR, KC_MS_L, KC_MS_D, KC_MS_R, KC_BTN1, _______,
+      KC_TRNS, _______, _______,  KC_F11,  KC_F12, _______,    _______, _______, _______, _______, KC_BTN2, KC_TRNS,
                                  _______, _______, _______,    _______, _______, _______
     ),
     [ADJ] = LAYOUT(
@@ -60,19 +60,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // -------------------------------------------------------------------------------------------------------
 enum combos {
   TILDE_COMBO,
-  ENTER_COMBO,
   RESET1_COMBO,
   RESET2_COMBO
 };
 
 const uint16_t PROGMEM tilde_combo[] = {KC_D, KC_F, COMBO_END};
-const uint16_t PROGMEM enter_combo[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM reset1_combo[] = {KC_E, KC_R, KC_T, COMBO_END};
 const uint16_t PROGMEM reset2_combo[] = {KC_Y, KC_U, KC_I, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
   [TILDE_COMBO] = COMBO_ACTION(tilde_combo),
-  [ENTER_COMBO] = COMBO_ACTION(enter_combo),
   [RESET1_COMBO] = COMBO_ACTION(reset1_combo),
   [RESET2_COMBO] = COMBO_ACTION(reset2_combo)
 };
@@ -84,13 +81,6 @@ void process_combo_event(uint8_t combo_index, bool pressed) {
         register_code(KC_GRV);
       } else {
         unregister_code(KC_GRV);
-      }
-      break;
-    case ENTER_COMBO:
-      if (pressed) {
-        register_code(KC_ENT);
-      } else {
-        unregister_code(KC_ENT);
       }
       break;
     case RESET1_COMBO:
@@ -125,10 +115,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
           layer_on(NAVNUM);
         }
+        timer = timer_read();
       } else {
         layer_off(NAVNUM);
         layer_off(FNS);
-        timer = timer_read();
+        // timer = timer_read();
       }
       break;
   }

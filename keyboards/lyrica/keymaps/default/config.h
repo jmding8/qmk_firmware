@@ -67,5 +67,6 @@
 // --------------------------------------------------------------
 // Combo configuration
 // --------------------------------------------------------------
-#define COMBO_COUNT 4
-#define COMBO_TERM 75
+#define COMBO_COUNT 3
+// #define COMBO_TERM 75
+#define COMBO_TERM 100
